@@ -424,7 +424,8 @@
     padding: 2rem;
     transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    cursor: pointer;
   }
 
   .feature-card::after {
@@ -436,7 +437,6 @@
   }
 
   .feature-card:hover {
-    transform: translate(-4px, -4px);
     box-shadow: 8px 8px 0 var(--shadow);
     border-color: var(--accent, var(--blue));
   }
@@ -517,7 +517,6 @@
 
   .team-card:hover {
     border-color: var(--yellow);
-    transform: translateY(-4px);
   }
 
   .team-avatar {
@@ -1242,6 +1241,320 @@
     color: var(--green);
     border-color: var(--green);
   }
+  /* ══════════════════════════════════════
+     TEAM MEMBER EXPAND PANEL
+  ══════════════════════════════════════ */
+  .team-card {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .team-card .click-hint {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+  }
+
+  .member-panel {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 8px);
+    width: 240px;
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: -6px 6px 0 var(--shadow);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(12px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .member-panel::before {
+    content: '';
+    display: block;
+    height: var(--px);
+    background: var(--yellow);
+  }
+
+  .member-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .member-expand-photo {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: var(--px) solid var(--border);
+    overflow: hidden;
+  }
+
+  .member-expand-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  .member-expand-photo-placeholder {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 32px;
+    color: var(--border);
+  }
+
+  .member-expand-body {
+    padding: 1rem;
+  }
+
+  .member-expand-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .member-expand-role {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .member-contact-label {
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .member-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .member-contact {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-decoration: none;
+    border: 2px solid var(--border);
+    padding: 4px 10px;
+    transition: color 0.15s, border-color 0.15s;
+    display: block;
+    word-break: break-all;
+  }
+
+  .member-contact:hover {
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+
+  @media (max-width: 900px) {
+    .member-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      transform: translate(-50%, -40%);
+      width: 280px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .member-panel.open {
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     FEATURE CARD EXPAND PANEL
+  ══════════════════════════════════════ */
+  .feature-card .click-hint {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .feature-expand {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 8px);
+    width: 320px;
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: -8px 8px 0 var(--shadow);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(16px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .feature-expand::before {
+    content: '';
+    display: block;
+    height: var(--px);
+    background: var(--accent, var(--green));
+  }
+
+  .feature-expand.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .feature-expand-header {
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: var(--px) solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .feature-expand-icon {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(2px 2px 0 var(--accent, var(--green)));
+  }
+
+  .feature-expand-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--accent, var(--green));
+    letter-spacing: 1px;
+    line-height: 1.8;
+  }
+
+  .feature-expand-body {
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: var(--px) solid var(--border);
+  }
+
+  .feature-expand-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* MP3 Player */
+  .feature-player {
+    padding: 1rem 1.5rem 1.25rem;
+  }
+
+  .feature-player-label {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .feature-player-track {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: var(--accent, var(--green));
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feature-player-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .player-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    background: none;
+    border: 2px solid var(--border);
+    color: var(--muted);
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+
+  .player-btn:hover,
+  .player-btn.playing {
+    color: var(--accent, var(--green));
+    border-color: var(--accent, var(--green));
+  }
+
+  .player-progress {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .player-progress-fill {
+    height: 100%;
+    background: var(--accent, var(--green));
+    width: 0%;
+    transition: width 0.1s linear;
+    pointer-events: none;
+  }
+
+  .player-time {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .player-no-file {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 0.5rem 0;
+    border: 2px dashed var(--border);
+    opacity: 0.7;
+  }
+
+  @media (max-width: 900px) {
+    .feature-expand {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      transform: translate(-50%, -40%);
+      width: 300px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .feature-expand.open {
+      transform: translate(-50%, -50%);
+    }
+  }
+
 </style>
 </head>
 <body class="pixel-grid-bg">
@@ -1349,36 +1662,127 @@
     <h2 class="features-title">WHAT IS BUG SLAYER?</h2>
   </div>
   <div class="features-grid">
-    <div class="feature-card reveal" style="--accent: var(--green);">
+
+    <div class="feature-card reveal" style="--accent: var(--green);" data-mp3="audio/combat.mp3" data-track="COMBAT THEME">
       <span class="feature-icon">⚔</span>
       <p class="feature-name">TURN-BASED COMBAT</p>
       <p class="feature-desc">Engage in strategic battles against bugs and viruses. Debug your way to victory using knowledge and tactics.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">⚔</span>
+          <span class="feature-expand-title">TURN-BASED COMBAT</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Face off against bugs and viruses in strategic turn-based battles. Each battle tests your coding knowledge — answer questions correctly to unleash powerful attacks and turn the tide.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// BATTLE THEME</span>
+          <div class="player-no-file">♪ ADD: audio/combat.mp3</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal" style="--accent: var(--yellow);">
+
+    <div class="feature-card reveal" style="--accent: var(--yellow);" data-mp3="audio/edu.mp3" data-track="QUIZ THEME">
       <span class="feature-icon">📚</span>
       <p class="feature-name">EDUCATIONAL CORE</p>
       <p class="feature-desc">Answer trivia and coding questions to deal damage. Learning fuels your power in every battle.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">📚</span>
+          <span class="feature-expand-title">EDUCATIONAL CORE</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Bug Slayer teaches real C# and programming concepts through gameplay. Every question you answer correctly deals damage — knowledge is your weapon.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// QUIZ THEME</span>
+          <div class="player-no-file">♪ ADD: audio/edu.mp3</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal" style="--accent: var(--blue);">
+
+    <div class="feature-card reveal" style="--accent: var(--blue);" data-mp3="audio/overworld.mp3" data-track="OVERWORLD THEME">
       <span class="feature-icon">🗺</span>
       <p class="feature-name">OPEN OVERWORLD</p>
       <p class="feature-desc">Explore a pixel art world, interact with NPCs, discover chests, and uncover secrets across multiple zones.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">🗺</span>
+          <span class="feature-expand-title">OPEN OVERWORLD</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Roam freely across a hand-crafted pixel art world. Talk to NPCs, raid hidden chests, dodge enemies, and uncover lore scattered across every zone.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// OVERWORLD THEME</span>
+          <div class="player-no-file">♪ ADD: audio/overworld.mp3</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal" style="--accent: var(--red);">
+
+    <div class="feature-card reveal" style="--accent: var(--red);" data-mp3="audio/dictionary.mp3" data-track="DICTIONARY THEME">
       <span class="feature-icon">👾</span>
       <p class="feature-name">ENEMY DICTIONARY</p>
       <p class="feature-desc">Defeat enemies enough times to unlock their code entries. Study them to gain an instant one-shot advantage.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">👾</span>
+          <span class="feature-expand-title">ENEMY DICTIONARY</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Defeat each enemy enough times and their entry unlocks in the Dictionary. Study their weaknesses and coding topic to gain an instant one-shot when you meet them again.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// DICTIONARY THEME</span>
+          <div class="player-no-file">♪ ADD: audio/dictionary.mp3</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal" style="--accent: var(--green);">
+
+    <div class="feature-card reveal" style="--accent: var(--green);" data-mp3="audio/inventory.mp3" data-track="INVENTORY THEME">
       <span class="feature-icon">🎒</span>
       <p class="feature-name">INVENTORY SYSTEM</p>
       <p class="feature-desc">Equip weapons, passives, and usable items. A Dark Souls-style hotbar keeps your best items at hand.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">🎒</span>
+          <span class="feature-expand-title">INVENTORY SYSTEM</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Manage weapons, passives, and consumables from a full inventory screen. A Dark Souls-inspired 4-slot hotbar lets you swap items mid-battle without breaking flow.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// INVENTORY THEME</span>
+          <div class="player-no-file">♪ ADD: audio/inventory.mp3</div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card reveal" style="--accent: var(--yellow);">
+
+    <div class="feature-card reveal" style="--accent: var(--yellow);" data-mp3="audio/menu.mp3" data-track="MENU THEME">
       <span class="feature-icon">🆓</span>
       <p class="feature-name">FREE TO PLAY</p>
       <p class="feature-desc">The base game is completely free. Optional DLC packs expand the experience at ₱49–₱99.</p>
+      <p class="click-hint">▶ CLICK TO LEARN MORE</p>
+      <div class="feature-expand">
+        <div class="feature-expand-header">
+          <span class="feature-expand-icon">🆓</span>
+          <span class="feature-expand-title">FREE TO PLAY</span>
+        </div>
+        <div class="feature-expand-body">
+          <p class="feature-expand-desc">Bug Slayer is 100% free. No paywalls, no locked story content. Optional DLC packs at ₱49–₱99 add extra zones, enemies, and cosmetics for those who want more.</p>
+        </div>
+        <div class="feature-player">
+          <span class="feature-player-label">// MENU THEME</span>
+          <div class="player-no-file">♪ ADD: audio/menu.mp3</div>
+        </div>
+      </div>
     </div>
+
   </div>
 </section>
 
@@ -1461,36 +1865,127 @@
     <h2 class="team-company reveal">OTHER'S DEVELOPMENT</h2>
     <p class="team-school reveal">STI COLLEGE CARMONA — GRADE 12 — GENERAL PARTNERSHIP</p>
     <div class="team-grid reveal">
+
       <div class="team-card">
         <div class="team-avatar">CM</div>
         <p class="team-name">CASTILLO MARK ANGELO P.</p>
         <p class="team-role">CEO</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">CM</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">CASTILLO MARK ANGELO P.</p>
+            <p class="member-expand-role">CEO</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="team-card">
         <div class="team-avatar">CS</div>
         <p class="team-name">CASANTUSAN SEGUNDINO MIGUEL C.</p>
         <p class="team-role">Developer</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">CS</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">CASANTUSAN SEGUNDINO MIGUEL C.</p>
+            <p class="member-expand-role">Developer</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="team-card">
         <div class="team-avatar">DJ</div>
         <p class="team-name">DELOS SANTOS JAMEEL T.</p>
         <p class="team-role">Developer</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">DJ</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">DELOS SANTOS JAMEEL T.</p>
+            <p class="member-expand-role">Developer</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="team-card">
         <div class="team-avatar">EA</div>
         <p class="team-name">EGDANIE ANDRIELLE A.</p>
         <p class="team-role">Developer</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">EA</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">EGDANIE ANDRIELLE A.</p>
+            <p class="member-expand-role">Developer</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="team-card">
         <div class="team-avatar">RR</div>
         <p class="team-name">ROBLES RAINA MEGUMI E.</p>
         <p class="team-role">Developer</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">RR</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">ROBLES RAINA MEGUMI E.</p>
+            <p class="member-expand-role">Developer</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="team-card">
         <div class="team-avatar">PA</div>
         <p class="team-name">PARCERO ANGELO DAVID D.</p>
         <p class="team-role">Developer</p>
+        <p class="click-hint">▶ CLICK FOR INFO</p>
+        <div class="member-panel">
+          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">PA</div></div>
+          <div class="member-expand-body">
+            <p class="member-expand-name">PARCERO ANGELO DAVID D.</p>
+            <p class="member-expand-role">Developer</p>
+            <span class="member-contact-label">// CONTACT</span>
+            <div class="member-contacts">
+              <a class="member-contact" href="#">📧 email@placeholder.com</a>
+              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
+              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -1841,6 +2336,184 @@ backdrop.addEventListener('click', closeModal);
 // Close on Escape
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+});
+// ═══════════════════════════════════════
+// TEAM MEMBER EXPAND PANELS
+// ═══════════════════════════════════════
+document.querySelectorAll('.team-card').forEach(card => {
+  const panel = card.querySelector('.member-panel');
+  if (!panel) return;
+
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.target.closest('a')) return; // let contact links work
+
+    const isOpen = panel.classList.contains('open');
+
+    // Close all other open panels first
+    document.querySelectorAll('.member-panel.open').forEach(p => p.classList.remove('open'));
+
+    if (!isOpen) panel.classList.add('open');
+  });
+});
+
+// Close on outside click
+document.addEventListener('click', () => {
+  document.querySelectorAll('.member-panel.open').forEach(p => p.classList.remove('open'));
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape')
+    document.querySelectorAll('.member-panel.open').forEach(p => p.classList.remove('open'));
+});
+// ═══════════════════════════════════════
+// FEATURE CARD EXPAND PANELS + MP3
+// ═══════════════════════════════════════
+let activeAudio = null;
+let activePlayBtn = null;
+
+function formatTime(s) {
+  if (!isFinite(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+function buildPlayer(panel, mp3Src, trackName, accentVar) {
+  const playerDiv = panel.querySelector('.feature-player');
+  if (!playerDiv) return;
+
+  // Replace placeholder with real player
+  playerDiv.innerHTML = `
+    <span class="feature-player-label">// NOW PLAYING</span>
+    <div class="feature-player-track">${trackName}</div>
+    <div class="feature-player-controls">
+      <button class="player-btn" data-action="play">▶ PLAY</button>
+      <div class="player-progress">
+        <div class="player-progress-fill"></div>
+      </div>
+      <span class="player-time">0:00</span>
+    </div>
+  `;
+
+  const audio    = new Audio(mp3Src);
+  const playBtn  = playerDiv.querySelector('[data-action="play"]');
+  const fill     = playerDiv.querySelector('.player-progress-fill');
+  const timeEl   = playerDiv.querySelector('.player-time');
+  const bar      = playerDiv.querySelector('.player-progress');
+
+  playBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    // Stop any other playing audio
+    if (activeAudio && activeAudio !== audio) {
+      activeAudio.pause();
+      activeAudio.currentTime = 0;
+      if (activePlayBtn) {
+        activePlayBtn.textContent = '▶ PLAY';
+        activePlayBtn.classList.remove('playing');
+      }
+    }
+
+    if (audio.paused) {
+      audio.play().catch(() => {});
+      playBtn.textContent = '■ STOP';
+      playBtn.classList.add('playing');
+      activeAudio   = audio;
+      activePlayBtn = playBtn;
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      playBtn.textContent = '▶ PLAY';
+      playBtn.classList.remove('playing');
+      activeAudio   = null;
+      activePlayBtn = null;
+    }
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    fill.style.width = pct + '%';
+    timeEl.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener('ended', () => {
+    fill.style.width = '0%';
+    timeEl.textContent = '0:00';
+    playBtn.textContent = '▶ PLAY';
+    playBtn.classList.remove('playing');
+    activeAudio   = null;
+    activePlayBtn = null;
+  });
+
+  // Click progress bar to seek
+  bar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!audio.duration) return;
+    const rect = bar.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+  });
+
+  // Stop audio when panel closes
+  panel._stopAudio = () => {
+    audio.pause();
+    audio.currentTime = 0;
+    playBtn.textContent = '▶ PLAY';
+    playBtn.classList.remove('playing');
+    if (activeAudio === audio) { activeAudio = null; activePlayBtn = null; }
+  };
+}
+
+document.querySelectorAll('.feature-card').forEach(card => {
+  const panel    = card.querySelector('.feature-expand');
+  if (!panel) return;
+
+  const mp3Src   = card.dataset.mp3;
+  const track    = card.dataset.track || 'TRACK';
+  let   built    = false;
+
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (e.target.closest('.player-btn') || e.target.closest('.player-progress')) return;
+
+    const isOpen = panel.classList.contains('open');
+
+    // Close all other panels and stop their audio
+    document.querySelectorAll('.feature-expand.open').forEach(p => {
+      p.classList.remove('open');
+      if (p._stopAudio) p._stopAudio();
+    });
+
+    if (!isOpen) {
+      panel.classList.add('open');
+
+      // Build real player once on first open if mp3 exists
+      if (!built && mp3Src) {
+        built = true;
+        buildPlayer(panel, mp3Src, track);
+      }
+    }
+  });
+});
+
+// Close on outside click
+document.addEventListener('click', () => {
+  document.querySelectorAll('.feature-expand.open').forEach(p => {
+    p.classList.remove('open');
+    if (p._stopAudio) p._stopAudio();
+  });
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.feature-expand.open').forEach(p => {
+      p.classList.remove('open');
+      if (p._stopAudio) p._stopAudio();
+    });
+  }
 });
 </script>
 </body>
