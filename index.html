@@ -1594,7 +1594,7 @@ async function typeLine(text) {
         clearInterval(interval);
         setTimeout(resolve, 120);
       }
-    }, 14);
+    }, 9);
   });
 }
 
@@ -1614,7 +1614,7 @@ async function runBoot() {
   shuffled.forEach((block, i) => {
     setTimeout(() => {
       block.classList.add('gone');
-    }, i * 9);
+    }, i * 1.5);
   });
 
   // After all blocks gone, remove overlay entirely
