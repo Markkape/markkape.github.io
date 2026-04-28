@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Slayer — Free-to-Play Educational RPG</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  /* ── THEME TOKENS ──
+     All colors reference these tokens only — never raw hex values.
+     Swapping themes = swapping one attribute on <html>.
+  ── */
+
+  :root {
+    --px: 4px;
+
+    /* Brand accents — darkened for light mode legibility */
+    --green:  #1a8a00;
+    --yellow: #a07800;
+    --red:    #cc0022;
+
+    /* Light mode (default) — white + blue palette */
+    --bg:       #f0f4ff;
+    --bg-deep:  #e2eaff;
+    --panel:    #ffffff;
+    --border:   #c2d0f0;
+    --text:     #0d1333;
+    --muted:    #5a6a99;
+    --blue:     #1a6fff;
+    --shadow:   rgba(26,111,255,0.18);
+    --nav-bg:   rgba(240,244,255,0.92);
+    --scan-line:rgba(26,111,255,0.04);
+    --grid-line:rgba(26,111,255,0.06);
+    --glow-hero:rgba(26,111,255,0.08);
+    --glow-dl:  rgba(26,111,255,0.09);
+    --pixel-shadow: #1a4fbb;
+  }
+
+  /* Dark mode — original bright accent palette */
+  [data-theme="dark"] {
+    --green:  #39ff14;
+    --yellow: #ffe600;
+    --red:    #ff2244;
+    --bg:       #0a0a0f;
+    --bg-deep:  #060609;
+    --panel:    #12121a;
+    --border:   #2a2a3a;
+    --text:     #e8e8f0;
+    --muted:    #888899;
+    --blue:     #00cfff;
+    --shadow:   rgba(0,0,0,0.6);
+    --nav-bg:   rgba(10,10,15,0.92);
+    --scan-line:rgba(0,0,0,0.08);
+    --grid-line:rgba(57,255,20,0.04);
+    --glow-hero:rgba(57,255,20,0.06);
+    --glow-dl:  rgba(57,255,20,0.07);
+    --pixel-shadow: #1a7a09;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    image-rendering: pixelated;
+    overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /* ── PIXEL BORDER UTILITY ── */
+  .px-border {
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+  }
+
+  /* ── SCANLINES OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      var(--scan-line) 3px,
+      var(--scan-line) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── PIXEL GRID BG ── */
+  .pixel-grid-bg {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* ══════════════════════════════════════
+     NAVBAR
+  ══════════════════════════════════════ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--nav-bg);
+    border-bottom: var(--px) solid var(--border);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 64px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .nav-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    color: var(--blue);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px var(--shadow);
+  }
+
+  [data-theme="dark"] .nav-logo {
+    color: var(--green);
+    text-shadow: 0 0 12px rgba(57,255,20,0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--blue); }
+  [data-theme="dark"] .nav-links a:hover { color: var(--green); }
+
+  .nav-download {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #fff;
+    background: var(--blue);
+    border: none;
+    padding: 10px 18px;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    box-shadow: 4px 4px 0 var(--pixel-shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: inline-block;
+  }
+
+  [data-theme="dark"] .nav-download {
+    color: var(--bg);
+    background: var(--green);
+  }
+
+  .nav-download:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--pixel-shadow);
+  }
+
+  .nav-download:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--pixel-shadow);
+  }
+
+  /* ══════════════════════════════════════
+     HERO
+  ══════════════════════════════════════ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 40%, var(--glow-hero) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 20% 80%, rgba(26,111,255,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 80% 20%, rgba(255,34,68,0.04) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 860px; }
+
+  .hero-eyebrow {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--blue);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: blink-cursor 1s step-end infinite;
+  }
+
+  [data-theme="dark"] .hero-eyebrow { color: var(--green); }
+
+  @keyframes blink-cursor {
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(28px, 5vw, 56px);
+    color: var(--text);
+    line-height: 1.4;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    text-shadow:
+      4px 4px 0 var(--blue),
+      8px 8px 0 var(--shadow);
+    animation: hero-drop 0.6s cubic-bezier(.22,1,.36,1) both;
+    display: inline-block;
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: 6px 6px 0 var(--shadow);
+    padding: 1rem 2rem;
+  }
+
+  [data-theme="dark"] .hero-title {
+    color: #fff;
+    text-shadow:
+      4px 4px 0 var(--green),
+      8px 8px 0 rgba(57,255,20,0.2);
+  }
+
+  @keyframes hero-drop {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-sub {
+    font-family: 'VT323', monospace;
+    font-size: clamp(20px, 3vw, 28px);
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: 2.5rem;
+    animation: hero-drop 0.6s 0.1s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .hero-tagline {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 3rem;
+    font-style: italic;
+    animation: hero-drop 0.6s 0.2s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    animation: hero-drop 0.6s 0.3s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .badge {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    padding: 6px 14px;
+    border: 2px solid;
+    letter-spacing: 1px;
+  }
+
+  .badge-green  { color: var(--green);  border-color: var(--green);  background: rgba(57,255,20,0.08); }
+  .badge-yellow { color: var(--yellow); border-color: var(--yellow); background: rgba(255,230,0,0.08); }
+  .badge-blue   { color: var(--blue);   border-color: var(--blue);   background: rgba(0,207,255,0.08); }
+
+  .hero-scroll {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    animation: bounce 2s ease-in-out infinite;
+    margin-top: 1rem;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(8px); }
+  }
+
+  /* ══════════════════════════════════════
+     SCREENSHOT STRIP
+  ══════════════════════════════════════ */
+  #screenshots {
+    padding: 5rem 2rem;
+    overflow: hidden;
+  }
+
+  .section-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--blue);
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  [data-theme="dark"] .section-label { color: var(--green); }
+
+  .screenshot-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .screenshot-box {
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .screenshot-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(255,255,255,0.015) 8px,
+      rgba(255,255,255,0.015) 16px
+    );
+  }
+
+  .screenshot-box.tall { aspect-ratio: 16/10; }
+  .screenshot-box.short { aspect-ratio: 4/3; }
+
+  .ss-label {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    z-index: 1;
+  }
+
+  .ss-icon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: var(--border);
+    z-index: 1;
+  }
+
+  .screenshot-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 12px;
+    max-width: 1100px;
+    margin: 12px auto 0;
+  }
+
+  /* ══════════════════════════════════════
+     FEATURES
+  ══════════════════════════════════════ */
+  #features {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .features-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .features-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 2.5vw, 22px);
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+    padding: 2rem;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: var(--px);
+    background: var(--accent, var(--green));
+  }
+
+  .feature-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--shadow);
+    border-color: var(--accent, var(--blue));
+  }
+
+  [data-theme="dark"] .feature-card:hover {
+    border-color: var(--accent, var(--green));
+  }
+
+  .feature-icon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .feature-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--accent, var(--green));
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════
+     TEAM
+  ══════════════════════════════════════ */
+  #team {
+    padding: 6rem 2rem;
+    background: var(--bg-deep);
+    border-top: var(--px) solid var(--border);
+    border-bottom: var(--px) solid var(--border);
+  }
+
+  .team-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .team-company {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 2vw, 16px);
+    color: var(--yellow);
+    margin-bottom: 0.75rem;
+    text-shadow: 3px 3px 0 rgba(255,230,0,0.2);
+  }
+
+  .team-school {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 3rem;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 2rem;
+  }
+
+  .team-card {
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: border-color 0.15s, transform 0.15s, background 0.3s ease;
+  }
+
+  .team-card:hover {
+    border-color: var(--yellow);
+    transform: translateY(-4px);
+  }
+
+  .team-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--border);
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--yellow);
+    border: 2px solid var(--yellow);
+  }
+
+  .team-name {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .team-role {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ══════════════════════════════════════
+     DOWNLOAD
+  ══════════════════════════════════════ */
+  #download {
+    padding: 8rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #download::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 50%, var(--glow-dl) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .download-inner { position: relative; z-index: 1; }
+
+  .download-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(16px, 3vw, 28px);
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .download-sub {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 3rem;
+  }
+
+  .download-btn {
+    display: inline-block;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 1.5vw, 14px);
+    color: #fff;
+    background: var(--blue);
+    padding: 20px 48px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    box-shadow: 6px 6px 0 var(--pixel-shadow), 12px 12px 0 var(--shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+    border: none;
+    cursor: pointer;
+  }
+
+  [data-theme="dark"] .download-btn {
+    color: var(--bg);
+    background: var(--green);
+  }
+
+  .download-btn:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--pixel-shadow), 16px 16px 0 var(--shadow);
+  }
+
+  .download-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0 var(--pixel-shadow);
+  }
+
+  .download-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 1.5rem;
+  }
+
+  .download-platforms {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .platform-tag {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    border: 2px solid var(--border);
+    padding: 4px 16px;
+    letter-spacing: 2px;
+  }
+
+  /* ══════════════════════════════════════
+     FOOTER
+  ══════════════════════════════════════ */
+  footer {
+    border-top: var(--px) solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    background: var(--bg-deep);
+  }
+
+  .footer-text {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  .footer-text span { color: var(--blue); }
+  [data-theme="dark"] .footer-text span { color: var(--green); }
+
+  /* ══════════════════════════════════════
+     THEME TOGGLE
+  ══════════════════════════════════════ */
+  .theme-toggle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--muted);
+    padding: 7px 10px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    margin-left: 1rem;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .theme-toggle-icon {
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  /* nav right side group */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ══════════════════════════════════════
+     ENEMIES
+  ══════════════════════════════════════ */
+  #enemies {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .enemies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 1rem;
+  }
+
+  .enemy-card {
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.3s ease;
+  }
+
+  .enemy-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 8px 8px 0 var(--shadow);
+    border-color: var(--enemy-color, var(--red));
+  }
+
+  .enemy-card-top {
+    padding: 2rem 2rem 1.25rem;
+    border-bottom: var(--px) solid var(--border);
+    position: relative;
+  }
+
+  .enemy-card-top::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: var(--px);
+    background: var(--enemy-color, var(--red));
+  }
+
+  .enemy-tier {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--enemy-color, var(--red));
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .enemy-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 1.8vw, 13px);
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+
+  .enemy-sprite {
+    float: right;
+    font-size: 42px;
+    line-height: 1;
+    margin: -0.5rem 0 0 1rem;
+    filter: drop-shadow(2px 2px 0 var(--enemy-color, var(--red)));
+  }
+
+  .enemy-card-body {
+    padding: 1.25rem 2rem 1.5rem;
+  }
+
+  .enemy-topic-label {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .enemy-topic {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--enemy-color, var(--red));
+    letter-spacing: 1px;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .enemy-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .enemy-stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .enemy-stat {
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border: 2px solid var(--border);
+    color: var(--muted);
+  }
+
+  .enemy-stat span { color: var(--enemy-color, var(--red)); }
+
+  /* ══════════════════════════════════════
+     ENEMY MODAL
+  ══════════════════════════════════════ */
+  .enemy-card { cursor: pointer; }
+
+  .enemy-card .click-hint {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-top: 1rem;
+    opacity: 0.7;
+  }
+
+  #enemy-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  #enemy-modal.open { display: flex; }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-box {
+    position: relative;
+    z-index: 1;
+    background: var(--panel);
+    border: var(--px) solid var(--modal-color, var(--border));
+    box-shadow: 8px 8px 0 var(--shadow);
+    width: 100%;
+    max-width: 580px;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  /* Colored top bar */
+  .modal-box::before {
+    content: '';
+    display: block;
+    height: var(--px);
+    background: var(--modal-color, var(--blue));
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: var(--px) solid var(--border);
+  }
+
+  .modal-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(9px, 1.5vw, 11px);
+    color: var(--modal-color, var(--blue));
+    letter-spacing: 1px;
+    line-height: 1.6;
+  }
+
+  .modal-close {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    background: none;
+    border: 2px solid var(--border);
+    color: var(--muted);
+    padding: 5px 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .modal-close:hover {
+    border-color: var(--modal-color, var(--red));
+    color: var(--modal-color, var(--red));
+  }
+
+  /* Animation tabs */
+  .modal-tabs {
+    display: flex;
+    border-bottom: var(--px) solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .modal-tabs::-webkit-scrollbar { display: none; }
+
+  .modal-tab {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    padding: 8px 16px;
+    border: none;
+    border-right: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .modal-tab:hover { color: var(--text); }
+
+  .modal-tab.active {
+    color: var(--modal-color, var(--blue));
+    background: var(--bg);
+    border-bottom: var(--px) solid var(--modal-color, var(--blue));
+    margin-bottom: calc(-1 * var(--px));
+  }
+
+  /* GIF viewer */
+  .modal-viewer {
+    position: relative;
+    background: var(--bg-deep);
+    aspect-ratio: 1/1;
+    max-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .modal-gif {
+    max-width: 100%;
+    max-height: 100%;
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  /* Pixel block wipe overlay inside viewer */
+  .viewer-wipe {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .viewer-block {
+    background: var(--bg-deep);
+    transition: opacity 0.12s ease, filter 0.12s ease;
+  }
+
+  .viewer-block.gone {
+    opacity: 0;
+    filter: blur(4px);
+  }
+
+  .modal-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-placeholder-icon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 36px;
+    color: var(--border);
+  }
+
+  .modal-placeholder-label {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  .modal-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: var(--px) solid var(--border);
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ══════════════════════════════════════
+     DIVIDER
+  ══════════════════════════════════════ */
+  .px-divider {
+    border: none;
+    border-top: var(--px) solid var(--border);
+    margin: 0;
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════ */
+  @media (max-width: 700px) {
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .screenshot-row, .screenshot-row-2 { grid-template-columns: 1fr; }
+    .screenshot-box.tall, .screenshot-box.short { aspect-ratio: 16/9; }
+  }
+
+  /* ══════════════════════════════════════
+     BOOT SCREEN
+  ══════════════════════════════════════ */
+  #boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #boot-screen.hidden { display: none; }
+
+  .boot-terminal {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(8px, 1.5vw, 11px);
+    color: #39ff14;
+    line-height: 2.2;
+    text-align: left;
+    min-width: 320px;
+    max-width: 520px;
+    width: 90%;
+    text-shadow: 0 0 8px rgba(57,255,20,0.6);
+  }
+
+  .boot-line {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    animation: type-line 0.4s steps(30, end) forwards;
+  }
+
+  .boot-line.done { width: 100%; }
+
+  @keyframes type-line {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+
+  .boot-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.1em;
+    background: #39ff14;
+    vertical-align: text-bottom;
+    animation: blink-block 0.7s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink-block {
+    50% { opacity: 0; }
+  }
+
+  /* Pixel block overlay — sits on top of page content during shatter */
+  #block-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    pointer-events: none;
+    display: grid;
+  }
+
+  .pixel-block {
+    background: #000;
+    transition: opacity 0.35s ease, filter 0.35s ease;
+  }
+
+  .pixel-block.gone {
+    opacity: 0;
+    filter: blur(8px);
+  }
+
+  /* ══════════════════════════════════════
+     MOBILE HAMBURGER
+  ══════════════════════════════════════ */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 6px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 3px;
+    background: var(--text);
+    transition: transform 0.2s, opacity 0.2s;
+    image-rendering: pixelated;
+  }
+
+  .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0; right: 0;
+    background: var(--nav-bg);
+    border-bottom: var(--px) solid var(--border);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+    flex-direction: column;
+    padding: 1rem 2rem;
+    gap: 0;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.15s;
+  }
+
+  .mobile-menu a:last-child { border-bottom: none; }
+  .mobile-menu a:hover { color: var(--blue); }
+  [data-theme="dark"] .mobile-menu a:hover { color: var(--green); }
+
+  @media (max-width: 700px) {
+    .hamburger { display: flex; }
+    .theme-toggle span:last-child { display: none; }
+  }
+
+  /* ══════════════════════════════════════
+     BACK TO TOP
+  ══════════════════════════════════════ */
+  #back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 500;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--bg);
+    background: var(--blue);
+    border: none;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--pixel-shadow);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.25s, transform 0.25s, box-shadow 0.1s;
+    pointer-events: none;
+    letter-spacing: 0.5px;
+  }
+
+  [data-theme="dark"] #back-to-top {
+    color: var(--bg);
+    background: var(--green);
+  }
+
+  #back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  #back-to-top:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--pixel-shadow);
+  }
+
+  /* ══════════════════════════════════════
+     SOCIAL LINKS IN FOOTER
+  ══════════════════════════════════════ */
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-social a {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 2px;
+    border: 2px solid var(--border);
+    padding: 4px 14px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .footer-social a:hover {
+    color: var(--blue);
+    border-color: var(--blue);
+  }
+
+  [data-theme="dark"] .footer-social a:hover {
+    color: var(--green);
+    border-color: var(--green);
+  }
+</style>
+</head>
+<body class="pixel-grid-bg">
+
+<!-- ══ BOOT SCREEN ══ -->
+<div id="boot-screen">
+  <div class="boot-terminal" id="bootTerminal"></div>
+</div>
+<div id="block-overlay"></div>
+
+<!-- ══ BACK TO TOP ══ -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">▲ TOP</button>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a class="nav-logo" href="#">BUG SLAYER</a>
+  <ul class="nav-links">
+    <li><a href="#screenshots">SCREENSHOTS</a></li>
+    <li><a href="#features">FEATURES</a></li>
+    <li><a href="#enemies">ENEMIES</a></li>
+    <li><a href="#team">TEAM</a></li>
+    <li><a href="#download">DOWNLOAD</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">DARK</span>
+    </button>
+    <a class="nav-download" href="#download">▶ DOWNLOAD</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ MOBILE MENU ══ -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#screenshots" class="mobile-link">SCREENSHOTS</a>
+  <a href="#features"    class="mobile-link">FEATURES</a>
+  <a href="#enemies"     class="mobile-link">ENEMIES</a>
+  <a href="#team"        class="mobile-link">TEAM</a>
+  <a href="#download"    class="mobile-link">DOWNLOAD</a>
+</div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">&gt; INITIALIZING BUG_SLAYER.EXE_</p>
+    <h1 class="hero-title">BUG SLAYER</h1>
+    <p class="hero-sub">FREE-TO-PLAY EDUCATIONAL TURN-BASED RPG</p>
+    <p class="hero-tagline">OUR GAMES FOR YOUR FUTURE</p>
+    <div class="hero-badges">
+      <span class="badge badge-green">FREE TO PLAY</span>
+      <span class="badge badge-yellow">EDUCATIONAL</span>
+      <span class="badge badge-blue">GODOT 4</span>
+      <span class="badge badge-green">PIXEL ART</span>
+    </div>
+    <p class="hero-scroll">▼ SCROLL DOWN ▼</p>
+  </div>
+</section>
+
+<hr class="px-divider">
+
+<!-- ══ SCREENSHOTS ══ -->
+<section id="screenshots">
+  <p class="section-label">// SCREENSHOTS</p>
+  <div class="screenshot-row reveal">
+    <div class="screenshot-box tall">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">OVERWORLD</span>
+    </div>
+    <div class="screenshot-box short">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">BATTLE</span>
+    </div>
+    <div class="screenshot-box short">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">HUD</span>
+    </div>
+  </div>
+  <div class="screenshot-row-2 reveal">
+    <div class="screenshot-box short">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">DIALOGUE</span>
+    </div>
+    <div class="screenshot-box short">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">INVENTORY</span>
+    </div>
+    <div class="screenshot-box tall">
+      <span class="ss-icon">[?]</span>
+      <span class="ss-label">BOSS FIGHT</span>
+    </div>
+  </div>
+</section>
+
+<hr class="px-divider">
+
+<!-- ══ FEATURES ══ -->
+<section id="features">
+  <div class="features-header reveal">
+    <p class="section-label">// FEATURES</p>
+    <h2 class="features-title">WHAT IS BUG SLAYER?</h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal" style="--accent: var(--green);">
+      <span class="feature-icon">⚔</span>
+      <p class="feature-name">TURN-BASED COMBAT</p>
+      <p class="feature-desc">Engage in strategic battles against bugs and viruses. Debug your way to victory using knowledge and tactics.</p>
+    </div>
+    <div class="feature-card reveal" style="--accent: var(--yellow);">
+      <span class="feature-icon">📚</span>
+      <p class="feature-name">EDUCATIONAL CORE</p>
+      <p class="feature-desc">Answer trivia and coding questions to deal damage. Learning fuels your power in every battle.</p>
+    </div>
+    <div class="feature-card reveal" style="--accent: var(--blue);">
+      <span class="feature-icon">🗺</span>
+      <p class="feature-name">OPEN OVERWORLD</p>
+      <p class="feature-desc">Explore a pixel art world, interact with NPCs, discover chests, and uncover secrets across multiple zones.</p>
+    </div>
+    <div class="feature-card reveal" style="--accent: var(--red);">
+      <span class="feature-icon">👾</span>
+      <p class="feature-name">ENEMY DICTIONARY</p>
+      <p class="feature-desc">Defeat enemies enough times to unlock their code entries. Study them to gain an instant one-shot advantage.</p>
+    </div>
+    <div class="feature-card reveal" style="--accent: var(--green);">
+      <span class="feature-icon">🎒</span>
+      <p class="feature-name">INVENTORY SYSTEM</p>
+      <p class="feature-desc">Equip weapons, passives, and usable items. A Dark Souls-style hotbar keeps your best items at hand.</p>
+    </div>
+    <div class="feature-card reveal" style="--accent: var(--yellow);">
+      <span class="feature-icon">🆓</span>
+      <p class="feature-name">FREE TO PLAY</p>
+      <p class="feature-desc">The base game is completely free. Optional DLC packs expand the experience at ₱49–₱99.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="px-divider">
+
+<!-- ══ ENEMIES ══ -->
+<section id="enemies">
+  <div class="features-header reveal">
+    <p class="section-label">// ENEMIES</p>
+    <h2 class="features-title">KNOW YOUR ENEMY</h2>
+  </div>
+  <div class="enemies-grid">
+
+    <!-- RANSOMWARE -->
+    <div class="enemy-card reveal" style="--enemy-color: var(--red);" data-enemy="ransomware" data-name="RANSOMWARE" data-color="var(--red)" data-icon="🔒">
+      <div class="enemy-card-top">
+        <span class="enemy-sprite">🔒</span>
+        <span class="enemy-tier">▸ ELITE ENEMY</span>
+        <p class="enemy-name">RANSOMWARE</p>
+      </div>
+      <div class="enemy-card-body">
+        <span class="enemy-topic-label">// BATTLE TOPIC</span>
+        <span class="enemy-topic">ENCRYPTION &amp; DATA SECURITY</span>
+        <p class="enemy-desc">A relentless digital extortionist that seals your data behind unbreakable ciphers. Answer questions on encryption algorithms, hashing, and secure data handling to break its hold — or watch your resources drain to zero.</p>
+        <div class="enemy-stats">
+          <div class="enemy-stat">TYPE <span>MALWARE</span></div>
+          <div class="enemy-stat">THREAT <span>HIGH</span></div>
+        </div>
+        <p class="click-hint">▶ CLICK TO VIEW ANIMATIONS</p>
+      </div>
+    </div>
+
+    <!-- MANTIS GENERAL -->
+    <div class="enemy-card reveal" style="--enemy-color: var(--yellow);" data-enemy="mantis" data-name="MANTIS GENERAL" data-color="var(--yellow)" data-icon="🦗">
+      <div class="enemy-card-top">
+        <span class="enemy-sprite">🦗</span>
+        <span class="enemy-tier">▸ BOSS</span>
+        <p class="enemy-name">MANTIS GENERAL</p>
+      </div>
+      <div class="enemy-card-body">
+        <span class="enemy-topic-label">// BATTLE TOPIC</span>
+        <span class="enemy-topic">OBJECT-ORIENTED PROGRAMMING</span>
+        <p class="enemy-desc">Commander of the insect legion. Masters inheritance, polymorphism, and encapsulation to outmaneuver every attack. Defeat it by demonstrating mastery of OOP principles — its hierarchy collapses when you understand it fully.</p>
+        <div class="enemy-stats">
+          <div class="enemy-stat">TYPE <span>BUG BOSS</span></div>
+          <div class="enemy-stat">THREAT <span>CRITICAL</span></div>
+        </div>
+        <p class="click-hint">▶ CLICK TO VIEW ANIMATIONS</p>
+      </div>
+    </div>
+
+    <!-- GOLDEN MOSQUITO -->
+    <div class="enemy-card reveal" style="--enemy-color: var(--green);" data-enemy="mosquito" data-name="GOLDEN MOSQUITO" data-color="var(--green)" data-icon="🦟">
+      <div class="enemy-card-top">
+        <span class="enemy-sprite">🦟</span>
+        <span class="enemy-tier">▸ RARE ENEMY</span>
+        <p class="enemy-name">GOLDEN MOSQUITO</p>
+      </div>
+      <div class="enemy-card-body">
+        <span class="enemy-topic-label">// BATTLE TOPIC</span>
+        <span class="enemy-topic">MEMORY MANAGEMENT</span>
+        <p class="enemy-desc">An elusive parasite that bleeds your system dry, one byte at a time. Notoriously hard to find, it exploits memory leaks and dangling references. Answer correctly on heap allocation, garbage collection, and pointers to pin it down.</p>
+        <div class="enemy-stats">
+          <div class="enemy-stat">TYPE <span>PARASITE</span></div>
+          <div class="enemy-stat">THREAT <span>RARE</span></div>
+        </div>
+        <p class="click-hint">▶ CLICK TO VIEW ANIMATIONS</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="px-divider">
+
+<!-- ══ TEAM ══ -->
+<section id="team">
+  <div class="team-inner">
+    <p class="section-label">// THE TEAM</p>
+    <h2 class="team-company reveal">OTHER'S DEVELOPMENT</h2>
+    <p class="team-school reveal">STI COLLEGE CARMONA — GRADE 12 — GENERAL PARTNERSHIP</p>
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-avatar">CM</div>
+        <p class="team-name">CASTILLO MARK ANGELO P.</p>
+        <p class="team-role">CEO</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">CS</div>
+        <p class="team-name">CASANTUSAN SEGUNDINO MIGUEL C.</p>
+        <p class="team-role">Developer</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">DJ</div>
+        <p class="team-name">DELOS SANTOS JAMEEL T.</p>
+        <p class="team-role">Developer</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">EA</div>
+        <p class="team-name">EGDANIE ANDRIELLE A.</p>
+        <p class="team-role">Developer</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">RR</div>
+        <p class="team-name">ROBLES RAINA MEGUMI E.</p>
+        <p class="team-role">Developer</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">PA</div>
+        <p class="team-name">PARCERO ANGELO DAVID D.</p>
+        <p class="team-role">Developer</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DOWNLOAD ══ -->
+<section id="download">
+  <div class="download-inner reveal">
+    <p class="section-label">// DOWNLOAD</p>
+    <h2 class="download-title">READY TO SLAY SOME BUGS?</h2>
+    <p class="download-sub">FREE. NO ACCOUNT NEEDED. JUST PLAY.</p>
+    <a class="download-btn" href="#">▶ DOWNLOAD NOW</a>
+    <p class="download-note">Windows · Coming soon to more platforms</p>
+    <div class="download-platforms">
+      <span class="platform-tag">🎮 CONTROLLER</span>
+      <span class="platform-tag">🪟 WINDOWS</span>
+      <span class="platform-tag">📱 ANDROID</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ENEMY MODAL ══ -->
+<div id="enemy-modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <p class="modal-title" id="modalTitle">ENEMY NAME</p>
+      <button class="modal-close" id="modalClose">✕ CLOSE</button>
+    </div>
+    <div class="modal-tabs" id="modalTabs">
+      <button class="modal-tab active" data-tab="startup">STARTUP</button>
+      <button class="modal-tab" data-tab="attack1">ATTACK 1</button>
+      <button class="modal-tab" data-tab="attack2">ATTACK 2</button>
+      <button class="modal-tab" data-tab="taunt1">TAUNT</button>
+      <button class="modal-tab" data-tab="defeat">DEFEAT</button>
+    </div>
+    <div class="modal-viewer" id="modalViewer">
+      <div class="modal-placeholder" id="modalPlaceholder">
+        <span class="modal-placeholder-icon" id="modalIcon">🔒</span>
+        <span class="modal-placeholder-label" id="modalTabLabel">STARTUP</span>
+      </div>
+      <div class="viewer-wipe" id="viewerWipe"></div>
+    </div>
+    <div class="modal-footer" id="modalFooter">// DROP YOUR GIF INTO THE MATCHING SLOT IN THE HTML</div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <p class="footer-text">
+    © 2026 <span>OTHER'S DEVELOPMENT</span> — BUG SLAYER — STI COLLEGE CARMONA
+  </p>
+  <div class="footer-social">
+    <a href="https://github.com/markkape" target="_blank" rel="noopener">⌥ GITHUB</a>
+    <a href="#download">▶ DOWNLOAD</a>
+    <a href="#features">◈ FEATURES</a>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════
+// BOOT SEQUENCE + PIXEL BLOCK SHATTER
+// ═══════════════════════════════════════
+const BOOT_LINES = [
+  '> BOOTING BUG_SLAYER.EXE...',
+  '> LOADING ASSETS............',
+  '> INITIALIZING ENGINE.......',
+  '> SPAWNING ENEMIES..........',
+  '> CALIBRATING HUD...........',
+  '  SYSTEM READY.',
+];
+
+const bootScreen  = document.getElementById('boot-screen');
+const bootTerminal = document.getElementById('bootTerminal');
+const blockOverlay = document.getElementById('block-overlay');
+
+// Build pixel block grid
+const BLOCK_SIZE = 60;
+const cols = Math.ceil(window.innerWidth  / BLOCK_SIZE);
+const rows = Math.ceil(window.innerHeight / BLOCK_SIZE);
+blockOverlay.style.gridTemplateColumns = `repeat(${cols}, ${BLOCK_SIZE}px)`;
+blockOverlay.style.gridTemplateRows    = `repeat(${rows}, ${BLOCK_SIZE}px)`;
+
+const blocks = [];
+for (let i = 0; i < cols * rows; i++) {
+  const b = document.createElement('div');
+  b.className = 'pixel-block';
+  blockOverlay.appendChild(b);
+  blocks.push(b);
+}
+
+// Type boot lines one by one
+async function typeLine(text) {
+  return new Promise(resolve => {
+    const span = document.createElement('span');
+    span.className = 'boot-line';
+    bootTerminal.appendChild(span);
+
+    let i = 0;
+    const interval = setInterval(() => {
+      span.textContent = text.slice(0, ++i);
+      if (i >= text.length) {
+        clearInterval(interval);
+        setTimeout(resolve, 120);
+      }
+    }, 14);
+  });
+}
+
+async function runBoot() {
+  for (const line of BOOT_LINES) {
+    await typeLine(line);
+  }
+
+  // Short pause before shatter
+  await new Promise(r => setTimeout(r, 400));
+
+  // Hide boot terminal, show block overlay
+  bootScreen.classList.add('hidden');
+
+  // Shuffle blocks randomly then remove them one by one
+  const shuffled = [...blocks].sort(() => Math.random() - 0.5);
+  shuffled.forEach((block, i) => {
+    setTimeout(() => {
+      block.classList.add('gone');
+    }, i * 6);
+  });
+
+  // After all blocks gone, remove overlay entirely
+  setTimeout(() => {
+    blockOverlay.remove();
+    // Kick off scroll reveals now that page is visible
+    initReveal();
+  }, shuffled.length * 6 + 400);
+}
+
+runBoot();
+
+// ═══════════════════════════════════════
+// SCROLL REVEAL (called after boot)
+// ═══════════════════════════════════════
+function initReveal() {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+}
+
+// ═══════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════
+const html       = document.documentElement;
+const toggleBtn  = document.getElementById('themeToggle');
+const themeIcon  = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+function applyTheme(dark) {
+  if (dark) {
+    html.setAttribute('data-theme', 'dark');
+    themeIcon.textContent  = '☀️';
+    themeLabel.textContent = 'LIGHT';
+  } else {
+    html.removeAttribute('data-theme');
+    themeIcon.textContent  = '🌙';
+    themeLabel.textContent = 'DARK';
+  }
+  localStorage.setItem('bugslayer-theme', dark ? 'dark' : 'light');
+}
+
+const saved = localStorage.getItem('bugslayer-theme');
+applyTheme(saved === 'dark');
+
+toggleBtn.addEventListener('click', () => {
+  applyTheme(!html.hasAttribute('data-theme'));
+});
+
+// ═══════════════════════════════════════
+// HAMBURGER MENU
+// ═══════════════════════════════════════
+const hamburger  = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+
+// Close mobile menu when a link is clicked
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  });
+});
+
+// ═══════════════════════════════════════
+// BACK TO TOP
+// ═══════════════════════════════════════
+const backToTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  backToTop.classList.toggle('visible', window.scrollY > 400);
+});
+// ═══════════════════════════════════════
+// ENEMY MODAL WITH PIXEL WIPE TRANSITION
+// ═══════════════════════════════════════
+
+// GIF map — replace null with path to your GIF file e.g. 'gifs/ransomware_startup.gif'
+const ENEMY_GIFS = {
+  ransomware: { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
+  mantis:     { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
+  mosquito:   { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
+};
+
+const TAB_LABELS = {
+  startup: 'STARTUP ANIMATION',
+  attack1: 'ATTACK 1',
+  attack2: 'ATTACK 2',
+  taunt1:  'TAUNT',
+  defeat:  'DEFEAT',
+};
+
+const modal       = document.getElementById('enemy-modal');
+const modalBox    = document.getElementById('modalBox');
+const modalTitle  = document.getElementById('modalTitle');
+const modalIcon   = document.getElementById('modalIcon');
+const modalTabLbl = document.getElementById('modalTabLabel');
+const modalFooter = document.getElementById('modalFooter');
+const modalClose  = document.getElementById('modalClose');
+const modalTabs   = document.getElementById('modalTabs');
+const viewerWipe  = document.getElementById('viewerWipe');
+const backdrop    = document.getElementById('modalBackdrop');
+
+let currentEnemy = null;
+let currentTab   = 'startup';
+let wipeBlocks   = [];
+
+// Build wipe grid inside viewer (small blocks for fast wipe)
+function buildWipeGrid() {
+  viewerWipe.innerHTML = '';
+  wipeBlocks = [];
+  const viewer  = document.getElementById('modalViewer');
+  const bSize   = 20;
+  const cols    = Math.ceil(viewer.offsetWidth  / bSize);
+  const rows    = Math.ceil(viewer.offsetHeight / bSize);
+  viewerWipe.style.gridTemplateColumns = `repeat(${cols}, ${bSize}px)`;
+  viewerWipe.style.gridTemplateRows    = `repeat(${rows}, ${bSize}px)`;
+  for (let i = 0; i < cols * rows; i++) {
+    const b = document.createElement('div');
+    b.className = 'viewer-block';
+    viewerWipe.appendChild(b);
+    wipeBlocks.push(b);
+  }
+}
+
+// Run the pixel wipe then call onDone
+function runWipe(onDone) {
+  // Reset all blocks to visible
+  wipeBlocks.forEach(b => b.classList.remove('gone'));
+
+  const shuffled = [...wipeBlocks].sort(() => Math.random() - 0.5);
+  const stagger  = 3; // ms per block — very fast
+
+  shuffled.forEach((b, i) => {
+    setTimeout(() => b.classList.add('gone'), i * stagger);
+  });
+
+  setTimeout(onDone, shuffled.length * stagger + 80);
+}
+
+function setTab(tabKey) {
+  currentTab = tabKey;
+
+  // Update tab button states
+  modalTabs.querySelectorAll('.modal-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabKey);
+  });
+
+  runWipe(() => {
+    const gif = ENEMY_GIFS[currentEnemy]?.[tabKey];
+    const placeholder = document.getElementById('modalPlaceholder');
+
+    if (gif) {
+      // If you have a real GIF, show it
+      placeholder.innerHTML = `<img class="modal-gif" src="${gif}" alt="${tabKey}">`;
+    } else {
+      // Placeholder
+      placeholder.innerHTML = `
+        <span class="modal-placeholder-icon">${modalIcon.textContent}</span>
+        <span class="modal-placeholder-label">${TAB_LABELS[tabKey]}</span>
+      `;
+    }
+
+    modalTabLbl.textContent = TAB_LABELS[tabKey];
+    modalFooter.textContent = gif
+      ? `// ${TAB_LABELS[tabKey]}`
+      : `// PLACEHOLDER — ADD GIF: gifs/${currentEnemy}_${tabKey}.gif`;
+  });
+}
+
+function openModal(card) {
+  currentEnemy = card.dataset.enemy;
+  const color  = card.dataset.color;
+  const icon   = card.dataset.icon;
+  const name   = card.dataset.name;
+
+  modalBox.style.setProperty('--modal-color', color);
+  modalTitle.textContent    = name;
+  modalIcon.textContent     = icon;
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Build wipe grid after modal is visible so dimensions are correct
+  requestAnimationFrame(() => {
+    buildWipeGrid();
+    setTab('startup');
+  });
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  currentEnemy = null;
+}
+
+// Wire enemy cards
+document.querySelectorAll('.enemy-card').forEach(card => {
+  card.addEventListener('click', () => openModal(card));
+});
+
+// Wire tabs
+modalTabs.querySelectorAll('.modal-tab').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (btn.dataset.tab !== currentTab) setTab(btn.dataset.tab);
+  });
+});
+
+// Close on X or backdrop
+modalClose.addEventListener('click', closeModal);
+backdrop.addEventListener('click', closeModal);
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+});
+</script>
+</body>
+</html>
