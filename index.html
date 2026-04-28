@@ -950,7 +950,7 @@
   .modal-viewer {
     position: relative;
     background: var(--bg-deep);
-    aspect-ratio: 1/1;
+    aspect-ratio: 16/9;
     max-height: 320px;
     display: flex;
     align-items: center;
@@ -959,10 +959,11 @@
   }
 
   .modal-gif {
-    max-width: 100%;
-    max-height: 100%;
-    image-rendering: pixelated;
-    display: block;
+    width: 200%;
+  height: 200%;
+  object-fit: cover;
+  transform: scale(1.2);
+  transform-origin: center;
   }
 
   /* Pixel block wipe overlay inside viewer */
@@ -1594,7 +1595,7 @@ async function typeLine(text) {
         clearInterval(interval);
         setTimeout(resolve, 120);
       }
-    }, 9);
+    },9);
   });
 }
 
@@ -1622,7 +1623,7 @@ async function runBoot() {
     blockOverlay.remove();
     // Kick off scroll reveals now that page is visible
     initReveal();
-  }, shuffled.length * 6 + 400);
+  }, shuffled.length * 1.5 + 400);
 }
 
 runBoot();
@@ -1703,7 +1704,7 @@ window.addEventListener('scroll', () => {
 
 // GIF map — replace null with path to your GIF file e.g. 'gifs/ransomware_startup.gif'
 const ENEMY_GIFS = {
-  ransomware: { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
+  ransomware: { startup: 'gifs/ransomware_startup.gif', attack1: 'gifs/ransomware_attack1.gif', attack2:'gifs/ransomware_attack2.gif', taunt1: 'gifs/ransomware_taunt1.gif', defeat: 'gifs/ransomware_defeat.gif' },
   mantis:     { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
   mosquito:   { startup: null, attack1: null, attack2: null, taunt1: null, defeat: null },
 };
