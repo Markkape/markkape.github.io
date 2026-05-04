@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bug Slayer — Free-to-Play Educational RPG</title>
+<link rel="icon" type="image/png" href="Other Dev's Icon.png">
+<link rel="shortcut icon" type="image/png" href="Other Dev's Icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   /* ── THEME TOKENS ──
@@ -127,6 +129,25 @@
     text-decoration: none;
     letter-spacing: 1px;
     text-shadow: 0 0 12px var(--shadow);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  .hero-logo-img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
   }
 
   [data-theme="dark"] .nav-logo {
@@ -232,22 +253,20 @@
     line-height: 1.4;
     letter-spacing: 2px;
     margin-bottom: 1rem;
-    text-shadow:
-      4px 4px 0 var(--blue),
-      8px 8px 0 var(--shadow);
+    text-shadow: none;
     animation: hero-drop 0.6s cubic-bezier(.22,1,.36,1) both;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
     background: var(--panel);
     border: var(--px) solid var(--border);
-    box-shadow: 6px 6px 0 var(--shadow);
+    box-shadow: none;
     padding: 1rem 2rem;
   }
 
   [data-theme="dark"] .hero-title {
     color: #fff;
-    text-shadow:
-      4px 4px 0 var(--green),
-      8px 8px 0 rgba(57,255,20,0.2);
+    text-shadow: none;
   }
 
   @keyframes hero-drop {
@@ -396,6 +415,7 @@
     padding: 6rem 2rem;
     max-width: 1100px;
     margin: 0 auto;
+    overflow: visible;
   }
 
   .features-header {
@@ -415,6 +435,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
+    overflow: visible;
   }
 
   .feature-card {
@@ -584,13 +605,23 @@
     margin-bottom: 3rem;
   }
 
+  .download-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
   .download-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
     font-family: 'Press Start 2P', monospace;
-    font-size: clamp(10px, 1.5vw, 14px);
+    font-size: clamp(9px, 1.5vw, 12px);
     color: #fff;
     background: var(--blue);
-    padding: 20px 48px;
+    padding: 18px 36px;
     text-decoration: none;
     letter-spacing: 1px;
     box-shadow: 6px 6px 0 var(--pixel-shadow), 12px 12px 0 var(--shadow);
@@ -599,9 +630,35 @@
     cursor: pointer;
   }
 
-  [data-theme="dark"] .download-btn {
-    color: var(--bg);
+  .download-btn.android {
     background: var(--green);
+    color: #fff;
+  }
+
+  [data-theme="dark"] .download-btn { background: var(--green); color: var(--bg); }
+  [data-theme="dark"] .download-btn.android { background: #39ff14; color: var(--bg); }
+
+  .download-btn-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .download-btn-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+  }
+
+  .download-btn-label {
+    font-size: 0.7em;
+    opacity: 0.8;
+    letter-spacing: 1px;
+  }
+
+  .download-btn-platform {
+    font-size: 1em;
+    letter-spacing: 1px;
   }
 
   .download-btn:hover {
@@ -1421,6 +1478,11 @@
     transform: translateX(0);
   }
 
+  /* Lift the open card above its siblings so the panel isn't clipped */
+  .feature-card.panel-open {
+    z-index: 10;
+  }
+
   .feature-expand-header {
     padding: 1.25rem 1.5rem 1rem;
     border-bottom: var(--px) solid var(--border);
@@ -1555,6 +1617,208 @@
     }
   }
 
+  /* ══════════════════════════════════════
+     HERO PIXEL ART CANVAS FALLBACK
+  ══════════════════════════════════════ */
+  .hero-bg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    image-rendering: pixelated;
+    /* Canvas is always shown as fallback; PNG overlay hides it when loaded */
+  }
+
+  /* The PNG hero bg image — overlays the canvas when loaded */
+  .hero-bg-img {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* ── LIGHT MODE PNG ── rename to match your daytime file: */
+    background-image: url('hero-bg.png');
+  }
+
+  /* ── DARK MODE PNG ── rename to match your night file: */
+  [data-theme="dark"] .hero-bg-img {
+    background-image: url('hero-bg-night.png');
+  }
+
+  .hero-bg-stars,
+  .hero-bg-mountains,
+  .hero-bg-ground {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+
+  /* ══════════════════════════════════════
+     HERO TEXT — RECOLORED FOR GREEN BG
+     No boxes, no shadows. Colors chosen
+     to contrast hard against bright green.
+  ══════════════════════════════════════ */
+
+  /* Eyebrow — no dark box, strong text shadow for readability */
+  .hero-eyebrow {
+    color: #00e5ff !important;
+    background: none !important;
+    border: none !important;
+    padding: 4px 14px;
+    display: inline-block;
+    text-shadow:
+      0 0 8px rgba(0,0,0,0.9),
+      1px 1px 0 rgba(0,0,0,0.9),
+      -1px -1px 0 rgba(0,0,0,0.9),
+      1px -1px 0 rgba(0,0,0,0.9),
+      -1px 1px 0 rgba(0,0,0,0.9),
+      0 2px 12px rgba(0,0,0,0.8) !important;
+  }
+  [data-theme="dark"] .hero-eyebrow {
+    color: #39ff14 !important;
+    background: none !important;
+    border: none !important;
+    text-shadow:
+      0 0 8px rgba(0,0,0,0.9),
+      1px 1px 0 rgba(0,0,0,0.9),
+      -1px -1px 0 rgba(0,0,0,0.9),
+      0 2px 12px rgba(0,0,0,0.8) !important;
+  }
+
+  /* Title — keep its panel box, strong text color */
+  .hero-title {
+    background: var(--panel) !important;
+    border: var(--px) solid var(--border) !important;
+    box-shadow: none !important;
+    color: #1a0050 !important;
+    text-shadow: none !important;
+  }
+  [data-theme="dark"] .hero-title {
+    background: var(--panel) !important;
+    border: var(--px) solid var(--border) !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    text-shadow: none !important;
+  }
+
+  /* Subtitle — no dark box, strong outline shadow */
+  .hero-sub {
+    color: #ffb800 !important;
+    font-size: clamp(20px, 3vw, 30px) !important;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: none !important;
+    border: none !important;
+    padding: 4px 14px !important;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+    text-shadow:
+      2px 2px 0 rgba(0,0,0,0.95),
+      -2px -2px 0 rgba(0,0,0,0.95),
+      2px -2px 0 rgba(0,0,0,0.95),
+      -2px 2px 0 rgba(0,0,0,0.95),
+      0 0 16px rgba(0,0,0,0.8) !important;
+  }
+  [data-theme="dark"] .hero-sub {
+    color: #ffe600 !important;
+    background: none !important;
+    border: none !important;
+    text-shadow:
+      2px 2px 0 rgba(0,0,0,0.95),
+      -2px -2px 0 rgba(0,0,0,0.95),
+      0 0 16px rgba(0,0,0,0.8) !important;
+  }
+
+  /* Tagline — no dark box, readable outline shadow */
+  .hero-tagline {
+    background: none !important;
+    color: #ff6eb4 !important;
+    border: none !important;
+    font-style: italic;
+    font-weight: 700;
+    padding: 4px 14px !important;
+    display: inline-block;
+    text-shadow:
+      1px 1px 0 rgba(0,0,0,0.95),
+      -1px -1px 0 rgba(0,0,0,0.95),
+      1px -1px 0 rgba(0,0,0,0.95),
+      -1px 1px 0 rgba(0,0,0,0.95),
+      0 0 12px rgba(0,0,0,0.8) !important;
+  }
+  [data-theme="dark"] .hero-tagline {
+    color: #ff6eb4 !important;
+    background: none !important;
+    border: none !important;
+    text-shadow:
+      1px 1px 0 rgba(0,0,0,0.95),
+      -1px -1px 0 rgba(0,0,0,0.95),
+      0 0 12px rgba(0,0,0,0.8) !important;
+  }
+
+  /* Badges — keep their borders, neon colors */
+  .badge {
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    font-size: 18px !important;
+    font-weight: 700;
+    border-width: 2px !important;
+  }
+
+  .badge-green  {
+    color: #39ff14 !important;
+    border-color: #39ff14 !important;
+    background: rgba(0,0,0,0.75) !important;
+  }
+  .badge-yellow {
+    color: #ffe600 !important;
+    border-color: #ffe600 !important;
+    background: rgba(0,0,0,0.75) !important;
+  }
+  .badge-blue   {
+    color: #00e5ff !important;
+    border-color: #00e5ff !important;
+    background: rgba(0,0,0,0.75) !important;
+  }
+
+  [data-theme="dark"] .badge-green  {
+    color: #39ff14 !important;
+    border-color: #39ff14 !important;
+    background: rgba(0,0,0,0.85) !important;
+    box-shadow: 0 0 8px #39ff14, inset 0 0 6px rgba(57,255,20,0.1) !important;
+  }
+  [data-theme="dark"] .badge-yellow {
+    color: #ffe600 !important;
+    border-color: #ffe600 !important;
+    background: rgba(0,0,0,0.85) !important;
+    box-shadow: 0 0 8px #ffe600, inset 0 0 6px rgba(255,230,0,0.1) !important;
+  }
+  [data-theme="dark"] .badge-blue   {
+    color: #00e5ff !important;
+    border-color: #00e5ff !important;
+    background: rgba(0,0,0,0.85) !important;
+    box-shadow: 0 0 8px #00e5ff, inset 0 0 6px rgba(0,229,255,0.1) !important;
+  }
+
+  /* Scroll hint — neon green, no border */
+  .hero-scroll {
+    color: #39ff14 !important;
+    border: none !important;
+    text-shadow:
+      1px 1px 0 rgba(0,0,0,0.9),
+      -1px -1px 0 rgba(0,0,0,0.9),
+      0 0 10px rgba(0,0,0,0.8) !important;
+  }
+  [data-theme="dark"] .hero-scroll {
+    color: #39ff14 !important;
+    border: none !important;
+    text-shadow:
+      1px 1px 0 rgba(0,0,0,0.9),
+      -1px -1px 0 rgba(0,0,0,0.9),
+      0 0 10px rgba(0,0,0,0.8) !important;
+  }
 </style>
 </head>
 <body class="pixel-grid-bg">
@@ -1570,7 +1834,7 @@
 
 <!-- ══ NAVBAR ══ -->
 <nav>
-  <a class="nav-logo" href="#">BUG SLAYER</a>
+  <a class="nav-logo" href="#"><img src="Bug Slayer Logo.png" alt="Bug Slayer Logo" class="nav-logo-img">BUG SLAYER</a>
   <ul class="nav-links">
     <li><a href="#screenshots">SCREENSHOTS</a></li>
     <li><a href="#features">FEATURES</a></li>
@@ -1602,10 +1866,17 @@
 
 <!-- ══ HERO ══ -->
 <section id="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg">
+    <!-- Pixel art canvas fallback — hidden when hero-bg-img PNG loads successfully -->
+    <canvas id="heroBgCanvas" class="hero-bg-canvas"></canvas>
+    <div class="hero-bg-img" id="heroBgImg"></div>
+    <div class="hero-bg-stars"></div>
+    <div class="hero-bg-mountains"></div>
+    <div class="hero-bg-ground"></div>
+  </div>
   <div class="hero-content">
     <p class="hero-eyebrow">&gt; INITIALIZING BUG_SLAYER.EXE_</p>
-    <h1 class="hero-title">BUG SLAYER</h1>
+    <h1 class="hero-title"><img src="Bug Slayer Logo.png" alt="Bug Slayer Logo" class="hero-logo-img">BUG SLAYER</h1>
     <p class="hero-sub">FREE-TO-PLAY EDUCATIONAL TURN-BASED RPG</p>
     <p class="hero-tagline">OUR GAMES FOR YOUR FUTURE</p>
     <div class="hero-badges">
@@ -1996,8 +2267,22 @@
     <p class="section-label">// DOWNLOAD</p>
     <h2 class="download-title">READY TO SLAY SOME BUGS?</h2>
     <p class="download-sub">FREE. NO ACCOUNT NEEDED. JUST PLAY.</p>
-    <a class="download-btn" href="#">▶ DOWNLOAD NOW</a>
-    <p class="download-note">Windows · Coming soon to more platforms</p>
+    <div class="download-buttons">
+      <a class="download-btn" href="#">
+        <span class="download-btn-icon">🪟</span>
+        <span class="download-btn-text">
+          <span class="download-btn-label">▶ DOWNLOAD FOR</span>
+          <span class="download-btn-platform">WINDOWS</span>
+        </span>
+      </a>
+      <a class="download-btn android" href="#">
+        <span class="download-btn-icon">📱</span>
+        <span class="download-btn-text">
+          <span class="download-btn-label">▶ DOWNLOAD FOR</span>
+          <span class="download-btn-platform">ANDROID</span>
+        </span>
+      </a>
+    </div>
     <div class="download-platforms">
       <span class="platform-tag">🎮 CONTROLLER</span>
       <span class="platform-tag">🪟 WINDOWS</span>
@@ -2384,7 +2669,6 @@ function buildPlayer(panel, mp4Src, trackName) {
   const playerDiv = panel.querySelector('.feature-player');
   if (!playerDiv) return;
 
-  // Replace placeholder with inline video player
   playerDiv.innerHTML = `
     <span class="feature-player-label">// NOW PLAYING</span>
     <div class="feature-player-track">${trackName}</div>
@@ -2411,8 +2695,6 @@ function buildPlayer(panel, mp4Src, trackName) {
 
   playBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-
-    // Stop any other playing video
     if (activeAudio && activeAudio !== video) {
       activeAudio.pause();
       activeAudio.currentTime = 0;
@@ -2421,7 +2703,6 @@ function buildPlayer(panel, mp4Src, trackName) {
         activePlayBtn.classList.remove('playing');
       }
     }
-
     if (video.paused) {
       video.play().catch(() => {});
       playBtn.textContent = '■ STOP';
@@ -2454,7 +2735,6 @@ function buildPlayer(panel, mp4Src, trackName) {
     activePlayBtn = null;
   });
 
-  // Click progress bar to seek
   bar.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!video.duration) return;
@@ -2462,7 +2742,6 @@ function buildPlayer(panel, mp4Src, trackName) {
     video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
   });
 
-  // Stop video when panel closes
   panel._stopAudio = () => {
     video.pause();
     video.currentTime = 0;
@@ -2473,12 +2752,12 @@ function buildPlayer(panel, mp4Src, trackName) {
 }
 
 document.querySelectorAll('.feature-card').forEach(card => {
-  const panel    = card.querySelector('.feature-expand');
+  const panel  = card.querySelector('.feature-expand');
   if (!panel) return;
 
-  const mp4Src   = card.dataset.mp4;
-  const track    = card.dataset.track || 'TRACK';
-  let   built    = false;
+  const mp4Src = card.dataset.mp4;
+  const track  = card.dataset.track || 'TRACK';
+  let   built  = false;
 
   card.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2486,20 +2765,16 @@ document.querySelectorAll('.feature-card').forEach(card => {
 
     const isOpen = panel.classList.contains('open');
 
-    // Close all other panels and stop their audio
     document.querySelectorAll('.feature-expand.open').forEach(p => {
       p.classList.remove('open');
       if (p._stopAudio) p._stopAudio();
     });
+    document.querySelectorAll('.feature-card.panel-open').forEach(c => c.classList.remove('panel-open'));
 
     if (!isOpen) {
+      card.classList.add('panel-open');
       panel.classList.add('open');
-
-      // Build real player once on first open if mp3 exists
-      if (!built && mp4Src) {
-        built = true;
-        buildPlayer(panel, mp4Src, track);
-      }
+      if (!built && mp4Src) { built = true; buildPlayer(panel, mp4Src, track); }
     }
   });
 });
@@ -2510,17 +2785,218 @@ document.addEventListener('click', () => {
     p.classList.remove('open');
     if (p._stopAudio) p._stopAudio();
   });
+  document.querySelectorAll('.feature-card.panel-open').forEach(c => c.classList.remove('panel-open'));
 });
 
-// Close on Escape
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.feature-expand.open').forEach(p => {
-      p.classList.remove('open');
-      if (p._stopAudio) p._stopAudio();
-    });
+// ═══════════════════════════════════════
+// HERO PIXEL ART CANVAS BACKGROUND
+// Serves as fallback behind the hero-bg-img PNG layer.
+// When you drop your PNG into .hero-bg-img via CSS, the canvas
+// stays underneath and is only visible if the PNG fails/is absent.
+// ═══════════════════════════════════════
+(function () {
+  const canvas = document.getElementById('heroBgCanvas');
+  if (!canvas) return;
+
+  // Pixel-art scene drawn at a low internal resolution then CSS-scaled up
+  const PX = 4;    // each "pixel block" = 4 real pixels
+  const W  = 320;  // internal canvas width  in pixel-art units
+  const H  = 180;  // internal canvas height in pixel-art units
+
+  canvas.width  = W;
+  canvas.height = H;
+
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  // ── Palette ────────────────────────────────────────────────────────
+  function palette() {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    return {
+      // Sky bands — deep to horizon
+      skyTop:    dark ? '#06060f' : '#8fb8f0',
+      skyMid:    dark ? '#0c0c22' : '#b8d4f8',
+      skyHorizon:dark ? '#141430' : '#ddeeff',
+
+      // Stars
+      star:      dark ? '#ffffff' : '#7090c8',
+      starDim:   dark ? '#aaaacc' : '#90aad8',
+
+      // Mountain layers — each progressively lighter/closer
+      mtn1Body:  dark ? '#12122e' : '#7090c0',   // farthest — darkest/most blue
+      mtn1Snow:  dark ? '#2a2a50' : '#c8d8f0',
+      mtn1Edge:  dark ? '#1a1a40' : '#a0b8e0',
+
+      mtn2Body:  dark ? '#0e1a32' : '#5070a8',
+      mtn2Snow:  dark ? '#222844' : '#b8ccec',
+      mtn2Edge:  dark ? '#162238' : '#8aace0',
+
+      mtn3Body:  dark ? '#0a1428' : '#304880',
+      mtn3Snow:  dark ? '#1a2438' : '#a8c0e8',
+      mtn3Edge:  dark ? '#101e30' : '#6888c0',
+
+      // Foreground cliff/ground — dark strip at bottom, no green
+      ground:    dark ? '#080c18' : '#1a2840',
+      groundEdge:dark ? '#0c1020' : '#243460',
+    };
   }
-});
+
+  // ── Pixel rect helper ──────────────────────────────────────────────
+  function px(x, y, w, h, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+  }
+
+  // ── Draw a jagged pixel mountain range ────────────────────────────
+  // pts: array of [x,y] peak/valley control points
+  // bodyColor, snowColor, edgeColor
+  // snowLine: y value above which snow is drawn
+  function drawMountainRange(pts, bodyColor, snowColor, edgeColor, snowLine) {
+    // Build full polygon (body)
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    pts.forEach(([x, y]) => ctx.lineTo(x, y));
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snow caps: for each local peak (lower y = higher visually),
+    // flood-fill a jagged snow triangle using pixel rects
+    for (let i = 1; i < pts.length - 1; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [xp, yp] = pts[i];
+      const [x1, y1] = pts[i + 1];
+
+      // Only draw snow if this point is a local peak above snowLine
+      if (yp < snowLine && yp <= y0 && yp <= y1) {
+        const peakX = xp, peakY = yp;
+        const leftX  = x0, leftY  = y0;
+        const rightX = x1, rightY = y1;
+
+        // Pixel-step down from peak, drawing horizontal strips of snow
+        // that taper outward following the mountain slopes
+        const snowDepth = Math.min(snowLine - peakY, 30);
+        for (let dy = 0; dy < snowDepth; dy++) {
+          const t = dy / snowDepth;
+          // Interpolate left & right extents from peak toward shoulders
+          const lx = peakX - (peakX - leftX)  * t * 0.55;
+          const rx = peakX + (rightX - peakX) * t * 0.55;
+          const sy = peakY + dy;
+          // Snap to 2-pixel grid for chunky pixel look
+          const sx = Math.floor(lx / 2) * 2;
+          const sw = Math.ceil((rx - lx) / 2) * 2;
+          if (sw > 0) {
+            // Alternate snow/edge color for a stepped rocky look
+            const rowColor = (dy % 4 < 3) ? snowColor : edgeColor;
+            px(sx, sy, sw, 2, rowColor);
+          }
+        }
+
+        // Hard pixel edge highlight along left slope from peak
+        for (let dy = 0; dy < snowDepth * 0.6; dy++) {
+          const t = dy / (snowDepth * 0.6);
+          const ex = peakX - (peakX - leftX) * t * 0.45;
+          const ey = peakY + dy;
+          px(Math.floor(ex / 2) * 2, ey, 2, 2, edgeColor);
+        }
+      }
+    }
+  }
+
+  // ── Main draw ─────────────────────────────────────────────────────
+  function draw() {
+    const p = palette();
+    ctx.clearRect(0, 0, W, H);
+
+    // ── Sky: three horizontal bands for depth ─────────────────────
+    px(0, 0,        W, Math.round(H * 0.40), p.skyTop);
+    px(0, Math.round(H * 0.40), W, Math.round(H * 0.30), p.skyMid);
+    px(0, Math.round(H * 0.70), W, Math.round(H * 0.30), p.skyHorizon);
+
+    // ── Stars (white pixel dots, upper sky only) ──────────────────
+    const starPts = [
+      [12,6,2],[28,14,1],[48,4,2],[68,10,1],[90,7,2],[112,3,1],[135,11,2],
+      [158,5,1],[178,9,2],[200,4,1],[222,12,2],[248,6,1],[270,10,2],[295,4,1],
+      [308,14,2],[22,22,1],[58,26,1],[100,20,2],[148,28,1],[195,18,1],[240,24,2],[285,20,1],
+    ];
+    starPts.forEach(([sx, sy, sz]) => {
+      px(sx, sy, sz, sz, sy < 16 ? p.star : p.starDim);
+    });
+
+    // ── Layer 1 — farthest mountains, tallest, most desaturated ──
+    const mtn1 = [
+      [0,95],[8,88],[18,72],[30,58],[42,44],[52,56],[60,38],[72,22],
+      [82,36],[90,28],[100,42],[112,30],[124,16],[136,30],[148,20],
+      [160,35],[170,25],[182,40],[194,28],[206,18],[218,32],[230,22],
+      [242,38],[254,26],[266,14],[278,28],[290,20],[302,36],[314,26],[320,40]
+    ];
+    drawMountainRange(mtn1, p.mtn1Body, p.mtn1Snow, p.mtn1Edge, 55);
+
+    // ── Layer 2 — mid mountains, slightly taller peaks ────────────
+    const mtn2 = [
+      [0,112],[10,100],[22,88],[36,72],[48,84],[58,65],[70,78],[82,58],
+      [96,70],[108,52],[122,64],[134,46],[148,60],[158,44],[172,58],
+      [184,68],[196,50],[210,65],[224,48],[238,62],[252,44],[264,58],
+      [278,70],[290,52],[304,66],[316,78],[320,85]
+    ];
+    drawMountainRange(mtn2, p.mtn2Body, p.mtn2Snow, p.mtn2Edge, 72);
+
+    // ── Layer 3 — nearest mountains, darkest, cut off at bottom ──
+    const mtn3 = [
+      [0,130],[12,120],[26,106],[40,118],[54,100],[68,112],[82,96],
+      [96,108],[110,90],[126,104],[140,88],[154,102],[168,86],[182,100],
+      [196,112],[210,94],[224,108],[238,92],[252,106],[266,118],[280,100],
+      [294,114],[308,102],[320,118]
+    ];
+    drawMountainRange(mtn3, p.mtn3Body, p.mtn3Snow, p.mtn3Edge, 110);
+
+    // ── Foreground ground — dark rocky strip, no green ────────────
+    // Jagged top edge for a cliff feel
+    const groundEdgePts = [
+      [0,148],[6,145],[14,150],[24,143],[36,148],[50,144],[64,150],
+      [80,145],[96,149],[112,143],[128,148],[144,144],[160,150],
+      [176,145],[192,149],[208,143],[224,148],[240,144],[256,150],
+      [272,145],[288,149],[304,143],[316,148],[320,150]
+    ];
+    ctx.fillStyle = p.groundEdge;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    groundEdgePts.forEach(([x, y]) => ctx.lineTo(x, y));
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+
+    // Solid dark ground beneath
+    px(0, 152, W, H - 152, p.ground);
+
+    // Subtle horizontal rock strata lines on ground
+    const strataColor = 'rgba(255,255,255,0.04)';
+    [155, 160, 165, 170].forEach(gy => px(0, gy, W, 1, strataColor));
+  }
+
+  // ── Initial render ────────────────────────────────────────────────
+  draw();
+
+  // ── Redraw on theme toggle ─────────────────────────────────────────
+  const observer = new MutationObserver(draw);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // ── Twinkling stars ────────────────────────────────────────────────
+  const twinkleIdx = [[12,6],[90,7],[178,9],[222,12],[266,10],[48,4],[200,4]];
+  let twinkleT = 0;
+  function twinkle() {
+    const p = palette();
+    twinkleIdx.forEach(([sx, sy], i) => {
+      const alpha = 0.3 + 0.7 * Math.abs(Math.sin(twinkleT * 0.04 + i * 1.7));
+      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+      ctx.fillRect(sx, sy, 2, 2);
+    });
+    twinkleT++;
+    requestAnimationFrame(twinkle);
+  }
+  twinkle();
+})();
 </script>
 </body>
 </html>
