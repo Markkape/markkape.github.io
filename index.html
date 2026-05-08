@@ -188,6 +188,18 @@
     display: inline-block;
   }
 
+  .nav-download:disabled,
+  .nav-download.coming-soon {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .nav-download:disabled:hover,
+  .nav-download.coming-soon:hover {
+    transform: none;
+    box-shadow: 4px 4px 0 var(--pixel-shadow);
+  }
+
   [data-theme="dark"] .nav-download {
     color: var(--bg);
     background: var(--green);
@@ -1847,7 +1859,7 @@
       <span class="theme-toggle-icon" id="themeIcon">🌙</span>
       <span id="themeLabel">DARK</span>
     </button>
-    <a class="nav-download" href="#download">▶ DOWNLOAD</a>
+    <a class="nav-download" href="./game/" target="_blank">▶ DOWNLOAD</a>
     <button class="hamburger" id="hamburger" aria-label="Open menu">
       <span></span><span></span><span></span>
     </button>
@@ -2268,18 +2280,18 @@
     <h2 class="download-title">READY TO SLAY SOME BUGS?</h2>
     <p class="download-sub">FREE. NO ACCOUNT NEEDED. JUST PLAY.</p>
     <div class="download-buttons">
-      <a class="download-btn" href="#">
+      <a class="download-btn" href="./game/" target="_blank">
         <span class="download-btn-icon">🪟</span>
         <span class="download-btn-text">
           <span class="download-btn-label">▶ DOWNLOAD FOR</span>
           <span class="download-btn-platform">WINDOWS</span>
         </span>
       </a>
-      <a class="download-btn android" href="#">
+      <a class="download-btn android coming-soon" href="#" onclick="alert('Coming Soon — May 22, 2026'); return false;">
         <span class="download-btn-icon">📱</span>
         <span class="download-btn-text">
-          <span class="download-btn-label">▶ DOWNLOAD FOR</span>
-          <span class="download-btn-platform">ANDROID</span>
+          <span class="download-btn-label">▶ COMING SOON</span>
+          <span class="download-btn-platform">MAY 22, 2026</span>
         </span>
       </a>
     </div>
