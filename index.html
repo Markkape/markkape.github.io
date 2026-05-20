@@ -340,11 +340,211 @@
   }
 
   /* ══════════════════════════════════════
+     COMMERCIAL / TRAILER SECTION
+  ══════════════════════════════════════ */
+  #commercial {
+    padding: 5rem 2rem;
+    background: var(--bg-deep);
+  }
+
+  .commercial-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .commercial-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .commercial-subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--blue);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  [data-theme="dark"] .commercial-subtitle { color: var(--green); }
+
+  .commercial-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(24px, 4vw, 42px);
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+  }
+
+  .commercial-description {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .video-wrapper {
+    margin-top: 3rem;
+    position: relative;
+    width: 100%;
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
+    overflow: hidden;
+  }
+
+  .video-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 8px,
+      rgba(255,255,255,0.015) 8px,
+      rgba(255,255,255,0.015) 16px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .video-frame {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: block;
+    background: #000;
+  }
+
+  .video-controls {
+    padding: 1.5rem;
+    background: var(--panel);
+    border-top: var(--px) solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .play-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--blue);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    flex-shrink: 0;
+  }
+
+  .play-btn::after {
+    content: '▶';
+    color: var(--blue);
+    font-size: 12px;
+    margin-left: 2px;
+  }
+
+  .play-btn.playing::after {
+    content: '⏸';
+    margin-left: 0;
+  }
+
+  .play-btn:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .play-btn:hover::after {
+    color: #fff;
+  }
+
+  [data-theme="dark"] .play-btn {
+    border-color: var(--green);
+  }
+
+  [data-theme="dark"] .play-btn::after,
+  [data-theme="dark"] .play-btn:hover::after {
+    color: var(--green);
+  }
+
+  [data-theme="dark"] .play-btn:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .progress-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    cursor: pointer;
+    border: 1px solid var(--muted);
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  [data-theme="dark"] .progress-fill {
+    background: var(--green);
+  }
+
+  .time-display {
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    min-width: 90px;
+  }
+
+  .volume-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--blue);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.1s;
+  }
+
+  .volume-btn:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  [data-theme="dark"] .volume-btn {
+    border-color: var(--green);
+  }
+
+  [data-theme="dark"] .volume-btn:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  /* ══════════════════════════════════════
      SCREENSHOT STRIP
   ══════════════════════════════════════ */
   #screenshots {
-    padding: 5rem 2rem;
+    padding: 5rem 0 5rem;
     overflow: hidden;
+  }
+
+  #screenshots .section-label {
+    padding: 0 2rem;
   }
 
   .section-label {
@@ -358,67 +558,120 @@
 
   [data-theme="dark"] .section-label { color: var(--green); }
 
-  .screenshot-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+  /* Horizontal scroll strip */
+  .screenshot-scroll-wrap {
+    position: relative;
+  }
+
+  .screenshot-scroll-track {
+    display: flex;
     gap: 12px;
-    max-width: 1100px;
-    margin: 0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 2rem 1.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    cursor: grab;
+  }
+
+  .screenshot-scroll-track:active {
+    cursor: grabbing;
+  }
+
+  .screenshot-scroll-track::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .screenshot-scroll-track::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .screenshot-scroll-track::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 0;
   }
 
   .screenshot-box {
+    flex: 0 0 auto;
+    width: clamp(260px, 38vw, 480px);
+    aspect-ratio: 16/10;
     background: var(--panel);
     border: var(--px) solid var(--border);
     box-shadow: var(--px) var(--px) 0 var(--shadow);
+    position: relative;
+    overflow: hidden;
+    scroll-snap-align: start;
+    transition: border-color 0.2s;
+  }
+
+  .screenshot-box:hover {
+    border-color: var(--blue);
+  }
+
+  [data-theme="dark"] .screenshot-box:hover {
+    border-color: var(--green);
+  }
+
+  .screenshot-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .ss-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: 2px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.72));
+    padding: 1.5rem 1rem 0.5rem;
+    text-align: left;
+    z-index: 2;
+  }
+
+  /* Scroll hint arrows */
+  .screenshot-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: var(--panel);
+    border: var(--px) solid var(--border);
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.3s ease, border-color 0.3s ease;
+    z-index: 10;
+    transition: background 0.15s, border-color 0.15s;
+    box-shadow: var(--px) var(--px) 0 var(--shadow);
   }
 
-  .screenshot-box::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 8px,
-      rgba(255,255,255,0.015) 8px,
-      rgba(255,255,255,0.015) 16px
-    );
+  .screenshot-arrow:hover {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
   }
 
-  .screenshot-box.tall { aspect-ratio: 16/10; }
-  .screenshot-box.short { aspect-ratio: 4/3; }
-
-  .ss-label {
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    z-index: 1;
+  [data-theme="dark"] .screenshot-arrow:hover {
+    background: var(--green);
+    color: var(--bg);
+    border-color: var(--green);
   }
 
-  .ss-icon {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 28px;
-    color: var(--border);
-    z-index: 1;
-  }
-
-  .screenshot-row-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
-    gap: 12px;
-    max-width: 1100px;
-    margin: 12px auto 0;
-  }
+  .screenshot-arrow.left  { left: 8px; }
+  .screenshot-arrow.right { right: 8px; }
 
   /* ══════════════════════════════════════
      FEATURES
@@ -553,8 +806,8 @@
   }
 
   .team-avatar {
-    width: 48px;
-    height: 48px;
+    width: 72px;
+    height: 72px;
     background: var(--border);
     margin: 0 auto 1rem;
     display: flex;
@@ -564,6 +817,16 @@
     font-size: 14px;
     color: var(--yellow);
     border: 2px solid var(--yellow);
+    overflow: hidden;
+  }
+
+  .team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    image-rendering: auto;
   }
 
   .team-name {
@@ -1370,7 +1633,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    image-rendering: pixelated;
+    object-position: center top;
+    image-rendering: auto;
     display: block;
   }
 
@@ -1903,30 +2167,70 @@
 
 <hr class="px-divider">
 
+<!-- ══ COMMERCIAL / TRAILER ══ -->
+<section id="commercial">
+  <div class="commercial-container">
+    <div class="commercial-header reveal">
+      <p class="commercial-subtitle">▶ WATCH ▶</p>
+      <h2 class="commercial-title">OFFICIAL TRAILER</h2>
+      <p class="commercial-description">
+        Experience the epic adventure of Bug Slayer. Watch our official game commercial to see combat, exploration, and the pixel art magic in motion.
+      </p>
+    </div>
+
+    <div class="video-wrapper reveal">
+      <video class="video-frame" id="commercialVideo" controls>
+        <source src="Assets\Videos\Bug_Slayer_Commercial.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div class="video-controls">
+        <button class="play-btn" id="commercialPlayBtn" aria-label="Play video"></button>
+        <div class="progress-container">
+          <div class="progress-bar" id="commercialProgress">
+            <div class="progress-fill" id="commercialProgressFill"></div>
+          </div>
+          <span class="time-display" id="commercialTime">0:00 / 0:00</span>
+        </div>
+        <button class="volume-btn" id="commercialVolumeBtn" aria-label="Toggle volume">🔊</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="px-divider">
+
 <!-- ══ SCREENSHOTS ══ -->
 <section id="screenshots">
   <p class="section-label">// SCREENSHOTS</p>
-  <div class="screenshot-row reveal">
-    <div class="screenshot-box tall">
-      <img src="assets/screenshots/Screenshot1.png" alt="Screenshot 1" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
+  <div class="screenshot-scroll-wrap">
+    <button class="screenshot-arrow left" id="ssLeft" aria-label="Scroll left">◀</button>
+    <div class="screenshot-scroll-track reveal" id="ssTrack">
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot1.png" alt="Overworld">
+        <span class="ss-label">OVERWORLD</span>
+      </div>
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot2.png" alt="Battle">
+        <span class="ss-label">BATTLE</span>
+      </div>
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot3.png" alt="HUD">
+        <span class="ss-label">HUD</span>
+      </div>
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot4.png" alt="Dialogue">
+        <span class="ss-label">DIALOGUE</span>
+      </div>
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot5.png" alt="Inventory">
+        <span class="ss-label">INVENTORY</span>
+      </div>
+      <div class="screenshot-box">
+        <img src="Assets/screenshots/Screenshot6.png" alt="Boss Fight">
+        <span class="ss-label">BOSS FIGHT</span>
+      </div>
     </div>
-    <div class="screenshot-box short">
-      <img src="assets/screenshots/Screenshot2.png" alt="Screenshot 2" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
-    </div>
-    <div class="screenshot-box short">
-      <img src="assets/screenshots/Screenshot3.png" alt="Screenshot 3" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
-    </div>
-  </div>
-  <div class="screenshot-row-2 reveal">
-    <div class="screenshot-box short">
-      <img src="assets/screenshots/Screenshot4.png" alt="Screenshot 4" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
-    </div>
-    <div class="screenshot-box short">
-      <img src="assets/screenshots/Screenshot5.png" alt="Screenshot 5" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
-    </div>
-    <div class="screenshot-box tall">
-      <img src="assets/screenshots/Screenshot6.png" alt="Screenshot 6" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:pixelated;">
-    </div>
+    <button class="screenshot-arrow right" id="ssRight" aria-label="Scroll right">▶</button>
   </div>
 </section>
 
@@ -2144,120 +2448,120 @@
     <div class="team-grid reveal">
 
       <div class="team-card">
-        <div class="team-avatar">CM</div>
+        <div class="team-avatar"><img src="Assets/team/Castillo Mark Angelo.png" alt="Castillo Mark Angelo P."></div>
         <p class="team-name">CASTILLO MARK ANGELO P.</p>
         <p class="team-role">CEO</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">CM</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Castillo Mark Angelo.png" alt="Castillo Mark Angelo P."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">CASTILLO MARK ANGELO P.</p>
             <p class="member-expand-role">CEO</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+              <a class="member-contact" href="#https://github.com/Markkape">🐙 https://github.com/Markkape</a>
+              <a class="member-contact" href="#https://www.facebook.com/profile.php?id=61581045126098">💬 Mark Angelo P. Castillo</a>
             </div>
           </div>
         </div>
       </div>
 
       <div class="team-card">
-        <div class="team-avatar">CS</div>
+        <div class="team-avatar"><img src="Assets/team/Segundino Miguel Casasntusan.png" alt="Casantusan Segundino Miguel C."></div>
         <p class="team-name">CASANTUSAN SEGUNDINO MIGUEL C.</p>
         <p class="team-role">Developer</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">CS</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Segundino Miguel Casasntusan.png" alt="Casantusan Segundino Miguel C."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">CASANTUSAN SEGUNDINO MIGUEL C.</p>
             <p class="member-expand-role">Developer</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+            
+              <a class="member-contact" href="#https://www.facebook.com/ShrIMP.024">💬 Segundino Miguel C. Casantusan</a>
             </div>
           </div>
         </div>
       </div>
 
       <div class="team-card">
-        <div class="team-avatar">DJ</div>
+        <div class="team-avatar"><img src="Assets/team/Jameel Tan Delos Santos.jpg" alt="Delos Santos Jameel T."></div>
         <p class="team-name">DELOS SANTOS JAMEEL T.</p>
         <p class="team-role">Developer</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">DJ</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Jameel Tan Delos Santos.jpg" alt="Delos Santos Jameel T."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">DELOS SANTOS JAMEEL T.</p>
             <p class="member-expand-role">Developer</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+           
+              <a class="member-contact" href="#https://www.facebook.com/miyamura.izumi.77770">💬 Jameel T. Delos Santos</a>
             </div>
           </div>
         </div>
       </div>
 
       <div class="team-card">
-        <div class="team-avatar">EA</div>
+        <div class="team-avatar"><img src="Assets/team/Andrielle Egdanie.jpg" alt="Egdanie Andrielle A."></div>
         <p class="team-name">EGDANIE ANDRIELLE A.</p>
         <p class="team-role">Developer</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">EA</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Andrielle Egdanie.jpg" alt="Egdanie Andrielle A."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">EGDANIE ANDRIELLE A.</p>
             <p class="member-expand-role">Developer</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+        
+              <a class="member-contact" href="#https://www.facebook.com/nora.palma.1865">💬 Andrielle Egdanie</a>
             </div>
           </div>
         </div>
       </div>
 
       <div class="team-card">
-        <div class="team-avatar">RR</div>
+        <div class="team-avatar"><img src="Assets/team/Megumi Robles.png" alt="Robles Raina Megumi E."></div>
         <p class="team-name">ROBLES RAINA MEGUMI E.</p>
         <p class="team-role">Developer</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">RR</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Megumi Robles.png" alt="Robles Raina Megumi E."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">ROBLES RAINA MEGUMI E.</p>
             <p class="member-expand-role">Developer</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+    
+              <a class="member-contact" href="#https://www.facebook.com/rainamegumi.robles.5">💬 Raina Megumi E. Robles</a>
             </div>
           </div>
         </div>
       </div>
 
       <div class="team-card">
-        <div class="team-avatar">PA</div>
+        <div class="team-avatar"><img src="Assets/team/Angelo Parcero David.jpg" alt="Parcero Angelo David D."></div>
         <p class="team-name">PARCERO ANGELO DAVID D.</p>
         <p class="team-role">Developer</p>
         <p class="click-hint">▶ CLICK FOR INFO</p>
         <div class="member-panel">
-          <div class="member-expand-photo"><div class="member-expand-photo-placeholder">PA</div></div>
+          <div class="member-expand-photo"><img src="Assets/team/Angelo Parcero David.jpg" alt="Parcero Angelo David D."></div>
           <div class="member-expand-body">
             <p class="member-expand-name">PARCERO ANGELO DAVID D.</p>
             <p class="member-expand-role">Developer</p>
             <span class="member-contact-label">// CONTACT</span>
             <div class="member-contacts">
-              <a class="member-contact" href="#">📧 email@placeholder.com</a>
-              <a class="member-contact" href="#">🐙 github.com/placeholder</a>
-              <a class="member-contact" href="#">💬 fb.com/placeholder</a>
+              <a class="member-contact" href="#archiveelysium03@gmail.com">📧 archiveelysium03@gmail.com</a>
+       
+              <a class="member-contact" href="#https://www.facebook.com/angelo.davidparcero">💬 Angelo David D. Parcero</a>
             </div>
           </div>
         </div>
@@ -2795,6 +3099,83 @@ document.addEventListener('click', () => {
 });
 
 // ═══════════════════════════════════════
+// COMMERCIAL VIDEO PLAYER
+// ═══════════════════════════════════════
+const commercialVideo = document.getElementById('commercialVideo');
+const commercialPlayBtn = document.getElementById('commercialPlayBtn');
+const commercialProgress = document.getElementById('commercialProgress');
+const commercialProgressFill = document.getElementById('commercialProgressFill');
+const commercialTime = document.getElementById('commercialTime');
+const commercialVolumeBtn = document.getElementById('commercialVolumeBtn');
+
+if (commercialVideo) {
+  // Format time as MM:SS
+  function formatTime(seconds) {
+    if (!isFinite(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  // Play/Pause button
+  commercialPlayBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (commercialVideo.paused) {
+      commercialVideo.play().catch(() => {});
+      commercialPlayBtn.classList.add('playing');
+    } else {
+      commercialVideo.pause();
+      commercialPlayBtn.classList.remove('playing');
+    }
+  });
+
+  // Update progress bar and time
+  commercialVideo.addEventListener('timeupdate', () => {
+    const percent = (commercialVideo.currentTime / commercialVideo.duration) * 100;
+    commercialProgressFill.style.width = `${percent}%`;
+    commercialTime.textContent = `${formatTime(commercialVideo.currentTime)} / ${formatTime(commercialVideo.duration)}`;
+  });
+
+  // Seek on progress bar click
+  commercialProgress.addEventListener('click', (e) => {
+    const rect = commercialProgress.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    commercialVideo.currentTime = percent * commercialVideo.duration;
+  });
+
+  // Volume button
+  commercialVolumeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (commercialVideo.muted) {
+      commercialVideo.muted = false;
+      commercialVolumeBtn.textContent = '🔊';
+    } else {
+      commercialVideo.muted = true;
+      commercialVolumeBtn.textContent = '🔇';
+    }
+  });
+
+  // Update play button on video end
+  commercialVideo.addEventListener('ended', () => {
+    commercialPlayBtn.classList.remove('playing');
+  });
+
+  // Sync play button with video state
+  commercialVideo.addEventListener('play', () => {
+    commercialPlayBtn.classList.add('playing');
+  });
+
+  commercialVideo.addEventListener('pause', () => {
+    commercialPlayBtn.classList.remove('playing');
+  });
+
+  // Initialize time display
+  commercialVideo.addEventListener('loadedmetadata', () => {
+    commercialTime.textContent = `0:00 / ${formatTime(commercialVideo.duration)}`;
+  });
+}
+
+// ═══════════════════════════════════════
 // HERO PIXEL ART CANVAS BACKGROUND
 // Serves as fallback behind the hero-bg-img PNG layer.
 // When you drop your PNG into .hero-bg-img via CSS, the canvas
@@ -3003,6 +3384,28 @@ document.addEventListener('click', () => {
   }
   twinkle();
 })();
+
+// SCREENSHOT SCROLL ARROWS
+const ssTrack = document.getElementById('ssTrack');
+const ssLeft  = document.getElementById('ssLeft');
+const ssRight = document.getElementById('ssRight');
+if (ssTrack && ssLeft && ssRight) {
+  const scrollAmt = () => ssTrack.querySelector('.screenshot-box')?.offsetWidth + 12 || 300;
+  ssLeft.addEventListener('click',  () => ssTrack.scrollBy({ left: -scrollAmt(), behavior: 'smooth' }));
+  ssRight.addEventListener('click', () => ssTrack.scrollBy({ left:  scrollAmt(), behavior: 'smooth' }));
+
+  // drag-to-scroll
+  let isDragging = false, startX, startScroll;
+  ssTrack.addEventListener('mousedown', e => {
+    isDragging = true; startX = e.pageX; startScroll = ssTrack.scrollLeft;
+    ssTrack.style.userSelect = 'none';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    ssTrack.scrollLeft = startScroll - (e.pageX - startX);
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; ssTrack.style.userSelect = ''; });
+}
 </script>
 </body>
 </html>
